@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>01_インプット資料</title>
+<link rel="stylesheet" href="../assets/styles.css">
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<script>document.addEventListener('DOMContentLoaded',()=>{ if(window.mermaid) mermaid.initialize({startOnLoad:true, theme:'default'}); });</script>
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar">
+    <h1>ESP32-CAM<br>簡易IoT監視システム<br>開発課題</h1>
+    <p class="small">Notionアカウント不要のHTML配布版</p>
+    <nav class="nav">
+<div class="section">入口</div>
+<a href="../index.html">受講者向け案内</a>
+<div class="section">インプット</div>
+<a href="01_input.html">01 上位文書</a>
+<a href="08_socket_interface.html">08 ソケット通信仕様</a>
+<a href="09_web_setup.html">09 Web側起動手順</a>
+<div class="section">テンプレート</div>
+<a href="02_design_template.html">02 詳細設計書</a>
+<a href="03_api_function_template.html">03 API・関数仕様</a>
+<a href="04_test_template.html">04 テスト仕様・結果</a>
+<a href="05_plan_review_template.html">05 作業計画・レビュー</a>
+<div class="section">補足</div>
+<a href="06_web_api.html">06 Web画面・API支給仕様</a>
+<a href="07_web_interface.html">07 Web側IF参考</a>
+<a href="../downloads/esp32_socket_relay_web.zip">Web側Zip</a>
+</nav>
+  </aside>
+  <main class="content">
+    <section class="hero"><h1>01_インプット資料：上位文書</h1><p>システムの目的、要求、構成、状態遷移を理解する資料</p></section>
+<div class="card">
+<h2>この資料の位置づけ</h2>
+<p>本資料は、受講者に渡すインプット資料である。受講者はこの上位文書を読み、詳細設計、API仕様、関数仕様、テスト仕様へ落とし込む。</p>
+</div>
+<div class="card">
+<h2>課題名</h2>
+<p>ESP32-CAM 簡易IoT監視システム</p>
+</div>
+<div class="card">
+<h2>システム目的</h2>
+<p>Freenove ESP32 Kit Dev CAM Board Ultimate Starter Kitを使用し、カメラ、センサー、LED、ブザー、Web側中継サーバを連携させた簡易IoT監視システムを構築する。</p>
+<p>本システムは、周囲の状態をセンサーで監視し、条件成立時にカメラ撮影、状態通知、Web画面表示を行う。</p>
+</div>
+<div class="card">
+<h2>利用者</h2>
+<table><tr><th>利用者</th><th>内容</th></tr>
+<tr><td>開発者</td><td>ESP32上で動作するソフトウェアを設計、実装、テストする</td></tr>
+<tr><td>レビュー担当者</td><td>設計書、ソースコード、テスト結果を確認する</td></tr>
+<tr><td>利用者</td><td>PCのブラウザからWeb側中継サーバへアクセスし、ESP32状態を確認する</td></tr></table>
+</div>
+<div class="card">
+<h2>システム構成</h2>
+<div class="mermaid">
+flowchart LR
+    Browser[Web画面<br>提供済み] -->|HTTP / WebSocket| Relay[Web側中継サーバ<br>提供済み]
+    ESP32[ESP32-CAM<br>受講者実装] -->|TCP Socket / JSON Lines| Relay
+    ESP32 --> Camera[カメラ]
+    Sensor[センサー] --> ESP32
+    Button[ボタン] --> ESP32
+    ESP32 --> LED[LED]
+    ESP32 --> Buzzer[ブザー]
+</div>
+</div>
+<div class="card">
+<h2>システムの基本動作</h2>
+<h3>起動時</h3>
+<ol>
+<li>電源投入後、ESP32を初期化する。</li>
+<li>Wi-Fiへ接続する。</li>
+<li>カメラを初期化する。</li>
+<li>センサー、LED、ボタン、ブザーを初期化する。</li>
+<li>Web側中継サーバへTCPソケット接続する。</li>
+<li>helloメッセージを送信する。</li>
+<li>監視状態へ遷移する。</li>
+</ol>
+<h3>監視中</h3>
+<ol>
+<li>センサー値を周期的に取得する。</li>
+<li>人や物体の検知状態を判定する。</li>
+<li>明るさを判定する。</li>
+<li>statusメッセージとしてWeb側中継サーバへ送信する。</li>
+<li>LEDで通常状態を表示する。</li>
+</ol>
+<h3>センサー検知時</h3>
+<ol>
+<li>人感センサーまたは距離センサーで検知する。</li>
+<li>明るさ条件を確認する。</li>
+<li>撮影条件が成立した場合、カメラで静止画を取得する。</li>
+<li>ブザーを短く鳴らす。</li>
+<li>statusまたはcapture_resultでWeb側へ状態を通知する。</li>
+<li>監視状態へ戻る。</li>
+</ol>
+<h3>Web画面からの手動撮影時</h3>
+<ol>
+<li>Web側中継サーバからcapture_requestを受信する。</li>
+<li>撮影可能状態か確認する。</li>
+<li>カメラで静止画を取得する。</li>
+<li>capture_resultを送信する。</li>
+<li>statusを更新して送信する。</li>
+</ol>
+<h3>異常時</h3>
+<p>Wi-Fi接続失敗、カメラ初期化失敗、センサー初期化失敗、TCP接続失敗、カメラ撮影失敗などの場合、ERROR状態へ遷移し、errorメッセージでWeb側へ通知する。</p>
+</div>
+<div class="card">
+<h2>機能要求</h2>
+<table>
+<tr><th>ID</th><th>機能</th><th>内容</th><th>優先度</th></tr>
+<tr><td>FR-001</td><td>Wi-Fi接続</td><td>ESP32を指定されたSSID、パスワードでWi-Fiへ接続する</td><td>必須</td></tr>
+<tr><td>FR-002</td><td>TCPソケット接続</td><td>Web側中継サーバへTCPソケット接続する</td><td>必須</td></tr>
+<tr><td>FR-003</td><td>hello送信</td><td>接続開始時にデバイス情報を送信する</td><td>必須</td></tr>
+<tr><td>FR-004</td><td>status送信</td><td>現在状態、センサー値、撮影結果、エラー情報を周期送信する</td><td>必須</td></tr>
+<tr><td>FR-005</td><td>撮影要求受信</td><td>Web側からcapture_requestを受信する</td><td>必須</td></tr>
+<tr><td>FR-006</td><td>カメラ撮影</td><td>撮影要求または条件成立時に静止画を取得する</td><td>必須</td></tr>
+<tr><td>FR-007</td><td>capture_result送信</td><td>撮影要求に対する結果を送信する</td><td>必須</td></tr>
+<tr><td>FR-008</td><td>センサー検知</td><td>人や物体の接近を検知する</td><td>必須</td></tr>
+<tr><td>FR-009</td><td>明るさ判定</td><td>周囲の明るさを判定する</td><td>必須</td></tr>
+<tr><td>FR-010</td><td>LED状態表示</td><td>正常、検知、撮影中、エラーをLEDで表示する</td><td>必須</td></tr>
+<tr><td>FR-011</td><td>ブザー通知</td><td>検知時またはエラー時にブザーで通知する</td><td>必須</td></tr>
+<tr><td>FR-012</td><td>状態管理</td><td>システム状態を状態遷移で管理する</td><td>必須</td></tr>
+<tr><td>FR-013</td><td>エラー処理</td><td>異常時にERROR状態へ遷移し、errorメッセージを送信する</td><td>必須</td></tr>
+<tr><td>FR-014</td><td>再接続</td><td>ソケット切断時に一定間隔で再接続を試みる</td><td>必須</td></tr>
+</table>
+</div>
+<div class="card">
+<h2>非機能要求</h2>
+<table><tr><th>ID</th><th>要求</th><th>内容</th></tr>
+<tr><td>NFR-001</td><td>可読性</td><td>関数名、変数名は役割が分かる名前にする</td></tr>
+<tr><td>NFR-002</td><td>保守性</td><td>Wi-Fi、ソケット通信、メッセージ生成、カメラ、センサー、GPIO、状態管理を分離する</td></tr>
+<tr><td>NFR-003</td><td>テスト性</td><td>モジュール単位で動作確認できる構成にする</td></tr>
+<tr><td>NFR-004</td><td>異常系対応</td><td>接続失敗、初期化失敗、撮影失敗、JSON異常時の動作を定義する</td></tr>
+<tr><td>NFR-005</td><td>再現性</td><td>READMEを見れば環境構築、ビルド、実行ができるようにする</td></tr>
+<tr><td>NFR-006</td><td>説明性</td><td>設計根拠、実装方針、テスト結果を説明できるようにする</td></tr></table>
+</div>
+<div class="card">
+<h2>状態遷移</h2>
+<div class="mermaid">
+stateDiagram-v2
+    [*] --> INIT
+    INIT --> WIFI_CONNECTING
+    WIFI_CONNECTING --> SENSOR_INIT
+    SENSOR_INIT --> SOCKET_CONNECTING
+    SOCKET_CONNECTING --> MONITORING
+
+    MONITORING --> DETECTED: センサー検知
+    DETECTED --> CAPTURING: 撮影条件成立
+    DETECTED --> MONITORING: 撮影条件不成立
+
+    MONITORING --> CAPTURING: capture_request受信
+    CAPTURING --> NOTIFYING: 撮影完了
+    NOTIFYING --> MONITORING
+
+    INIT --> ERROR: 初期化失敗
+    WIFI_CONNECTING --> ERROR: Wi-Fi接続失敗
+    SENSOR_INIT --> ERROR: センサー初期化失敗
+    SOCKET_CONNECTING --> ERROR: 接続失敗
+    CAPTURING --> ERROR: カメラ撮影失敗
+
+    ERROR --> INIT: リセット
+</div>
+<table><tr><th>状態名</th><th>内容</th><th>主な処理</th></tr>
+<tr><td>INIT</td><td>初期化中</td><td>基本初期化</td></tr>
+<tr><td>WIFI_CONNECTING</td><td>Wi-Fi接続中</td><td>Wi-Fi接続処理</td></tr>
+<tr><td>SENSOR_INIT</td><td>センサー、カメラ、GPIO初期化中</td><td>デバイス初期化</td></tr>
+<tr><td>SOCKET_CONNECTING</td><td>Web側中継サーバへ接続中</td><td>TCP接続、hello送信</td></tr>
+<tr><td>MONITORING</td><td>通常監視中</td><td>センサー取得、status送信</td></tr>
+<tr><td>DETECTED</td><td>センサー検知状態</td><td>撮影条件判定</td></tr>
+<tr><td>CAPTURING</td><td>撮影中</td><td>カメラ撮影</td></tr>
+<tr><td>NOTIFYING</td><td>通知中</td><td>capture_result/status送信、LED/ブザー通知</td></tr>
+<tr><td>ERROR</td><td>異常状態</td><td>error送信、LED/ブザー通知</td></tr></table>
+</div>
+<div class="card">
+<h2>詳細設計作成に必要な補足条件</h2>
+<h3>使用センサーの前提</h3>
+<table><tr><th>区分</th><th>部品</th><th>用途</th><th>備考</th></tr>
+<tr><td>必須</td><td>ESP32-CAM</td><td>メイン制御、Wi-Fi、カメラ</td><td>キット付属品を使用する</td></tr>
+<tr><td>必須</td><td>カメラ</td><td>静止画取得</td><td>ESP32-CAM搭載カメラ</td></tr>
+<tr><td>必須</td><td>人感センサー または 距離センサー</td><td>人や物体の検知</td><td>キット内の使用可能な部品を選択</td></tr>
+<tr><td>必須</td><td>明るさセンサー</td><td>周囲の明るさ判定</td><td>ADC入力を想定</td></tr>
+<tr><td>必須</td><td>ボタン</td><td>手動操作、リセット操作</td><td>チャタリング対策を行う</td></tr>
+<tr><td>必須</td><td>LED</td><td>状態表示</td><td>正常、検知、撮影中、エラーを区別</td></tr>
+<tr><td>必須</td><td>ブザー</td><td>検知時、エラー時の通知</td><td>鳴動時間を制御</td></tr>
+<tr><td>任意</td><td>温湿度センサー</td><td>温度、湿度表示</td><td>発展課題</td></tr></table>
+<h3>制御周期の前提</h3>
+<table><tr><th>処理</th><th>周期・タイミング</th><th>備考</th></tr>
+<tr><td>メイン監視処理</td><td>100ms周期を目安</td><td>センサー値取得、状態遷移判定</td></tr>
+<tr><td>ボタン入力確認</td><td>50ms〜100ms周期</td><td>チャタリング対策</td></tr>
+<tr><td>明るさセンサー取得</td><td>500ms周期</td><td>急激な変化を追いすぎない</td></tr>
+<tr><td>status送信</td><td>1秒周期を目安</td><td>Web側へ状態通知</td></tr>
+<tr><td>カメラ撮影</td><td>イベント発生時</td><td>capture_requestまたは条件成立時</td></tr>
+<tr><td>ブザー鳴動</td><td>100ms〜500ms程度</td><td>状態に応じて設計</td></tr></table>
+<h3>撮影条件の前提</h3>
+<ol><li>監視状態であること。</li><li>人感センサーまたは距離センサーで検知ありと判定されること。</li><li>明るさセンサー値が、設計で定義した閾値条件を満たすこと。</li><li>直前の撮影から一定時間以上経過していること。</li></ol>
+<h3>LED表示仕様</h3>
+<table><tr><th>状態</th><th>LED表示</th><th>内容</th></tr>
+<tr><td>INIT</td><td>ゆっくり点滅</td><td>初期化中</td></tr>
+<tr><td>WIFI_CONNECTING</td><td>速く点滅</td><td>Wi-Fi接続中</td></tr>
+<tr><td>MONITORING</td><td>点灯</td><td>監視中、正常状態</td></tr>
+<tr><td>DETECTED</td><td>2回点滅</td><td>センサー検知</td></tr>
+<tr><td>CAPTURING</td><td>短周期点滅</td><td>撮影中</td></tr>
+<tr><td>ERROR</td><td>連続点滅</td><td>異常状態</td></tr></table>
+</div>
+<div class="card">
+<h2>詳細設計で必ず決めること</h2>
+<ul>
+<li>使用するセンサーの種類</li><li>GPIO割り当て</li><li>センサー値の取得方法</li><li>明るさ判定の閾値</li><li>検知時の撮影条件</li><li>連続撮影を防ぐ方法</li><li>LED表示パターン</li><li>ブザー通知パターン</li><li>TCP接続先IP・ポートの管理方法</li><li>status送信周期</li><li>JSON Linesの生成・解析方法</li><li>受信バッファ処理方針</li><li>再接続方針</li><li>capture_request受信時の動作</li><li>エラー時の動作</li><li>単体テスト、結合テスト、異常系テストの確認方法</li>
+</ul>
+</div>
+
+    <div class="footer">HTML export generated for offline distribution. Mermaid diagrams render via CDN when online.</div>
+  </main>
+</div>
+</body>
+</html>

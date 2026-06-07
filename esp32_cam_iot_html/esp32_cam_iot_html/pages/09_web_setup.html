@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>09_Web側中継サーバ＋Web画面 起動手順書</title>
+<link rel="stylesheet" href="../assets/styles.css">
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<script>document.addEventListener('DOMContentLoaded',()=>{ if(window.mermaid) mermaid.initialize({startOnLoad:true, theme:'default'}); });</script>
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar">
+    <h1>ESP32-CAM<br>簡易IoT監視システム<br>開発課題</h1>
+    <p class="small">Notionアカウント不要のHTML配布版</p>
+    <nav class="nav">
+<div class="section">入口</div>
+<a href="../index.html">受講者向け案内</a>
+<div class="section">インプット</div>
+<a href="01_input.html">01 上位文書</a>
+<a href="08_socket_interface.html">08 ソケット通信仕様</a>
+<a href="09_web_setup.html">09 Web側起動手順</a>
+<div class="section">テンプレート</div>
+<a href="02_design_template.html">02 詳細設計書</a>
+<a href="03_api_function_template.html">03 API・関数仕様</a>
+<a href="04_test_template.html">04 テスト仕様・結果</a>
+<a href="05_plan_review_template.html">05 作業計画・レビュー</a>
+<div class="section">補足</div>
+<a href="06_web_api.html">06 Web画面・API支給仕様</a>
+<a href="07_web_interface.html">07 Web側IF参考</a>
+<a href="../downloads/esp32_socket_relay_web.zip">Web側Zip</a>
+</nav>
+  </aside>
+  <main class="content">
+    <section class="hero"><h1>09_Web側中継サーバ＋Web画面 起動手順書</h1><p>Web側環境の起動、Node.js導入、モック確認手順</p></section>
+<div class="card">
+<h2>提供物</h2>
+<table><tr><th>提供物</th><th>内容</th></tr>
+<tr><td>esp32_socket_relay_web.zip</td><td>Web画面、中継サーバ、動作確認用モックESP32を含む一式</td></tr>
+<tr><td>Web画面</td><td>ブラウザでESP32状態を確認する画面</td></tr>
+<tr><td>中継サーバ</td><td>ブラウザとESP32の通信を中継するNode.jsサーバ</td></tr>
+<tr><td>モックESP32</td><td>ESP32実機なしでWeb側の動作確認をするためのNode.jsスクリプト</td></tr>
+</table>
+<a class="download" href="../downloads/esp32_socket_relay_web.zip">esp32_socket_relay_web.zip をダウンロード</a>
+</div>
+<div class="card">
+<h2>全体構成</h2>
+<div class="mermaid">
+flowchart LR
+    Browser[ブラウザ<br>Web画面] -->|HTTP / WebSocket| Relay[中継サーバ<br>Node.js]
+    ESP32[ESP32-CAM<br>受講者実装] -->|TCP Socket / JSON Lines| Relay
+</div>
+</div>
+<div class="card">
+<h2>必要環境</h2>
+<table><tr><th>項目</th><th>内容</th></tr>
+<tr><td>PC</td><td>Windows / macOS / Linux いずれも可</td></tr>
+<tr><td>Node.js</td><td>18以降推奨。LTS版推奨</td></tr>
+<tr><td>ブラウザ</td><td>Chrome / Edge 推奨</td></tr>
+<tr><td>ネットワーク</td><td>PCとESP32が同一ネットワーク上にいること</td></tr>
+</table>
+</div>
+<div class="card">
+<h2>Node.jsインストール手順</h2>
+<p>Web側環境を起動するには、PCにNode.jsをインストールする必要がある。公式サイトからLTS版をインストールすることを推奨する。</p>
+<p><a href="https://nodejs.org/en/download">https://nodejs.org/en/download</a></p>
+<h3>バージョン確認</h3>
+<pre><code>node -v
+npm -v</code></pre>
+<h3>Windowsの場合</h3>
+<ol>
+<li>公式サイトを開く。</li><li>Windows用のLTS版インストーラをダウンロードする。</li><li>ダウンロードした <code>.msi</code> ファイルを実行する。</li><li>基本的にはデフォルト設定でよい。</li><li><code>npm package manager</code> と <code>Add to PATH</code> が有効になっていることを確認する。</li><li>PowerShellまたはコマンドプロンプトを新しく開き直し、<code>node -v</code> と <code>npm -v</code> を実行する。</li>
+</ol>
+<h3>macOSの場合</h3>
+<p>公式インストーラを使用する。Homebrewを使用している場合は以下でもよい。</p>
+<pre><code>brew install node</code></pre>
+<h3>Linuxの場合</h3>
+<p>Linux環境ではディストリビューション標準のパッケージマネージャでもインストールできるが、バージョンが古い場合がある。Node.js公式サイトの手順に従ってLTS版を入れることを推奨する。</p>
+</div>
+<div class="card">
+<h2>事前準備</h2>
+<h3>1. Zipを展開する</h3>
+<p><code>esp32_socket_relay_web.zip</code> を任意の作業フォルダに展開する。</p>
+<pre><code>esp32_socket_relay_web/
+  server.js
+  package.json
+  public/
+    index.html
+    styles.css
+    app.js
+  tools/
+    mock_esp32.js
+  README.md</code></pre>
+<h3>2. ターミナルでフォルダへ移動する</h3>
+<pre><code>cd esp32_socket_relay_web</code></pre>
+<h3>3. パッケージをインストールする</h3>
+<pre><code>npm install</code></pre>
+</div>
+<div class="card">
+<h2>起動手順</h2>
+<pre><code>npm start</code></pre>
+<p>起動すると、以下のようなログが表示される。</p>
+<pre><code>TCP socket server listening on 0.0.0.0:5000
+Web server listening on http://localhost:3000</code></pre>
+<p>ブラウザで以下を開く。</p>
+<pre><code>http://localhost:3000</code></pre>
+</div>
+<div class="card">
+<h2>ESP32実機なしで動作確認する方法</h2>
+<p>中継サーバを起動した状態で、別ターミナルを開き、以下を実行する。</p>
+<pre><code>npm run mock:esp32</code></pre>
+<p>成功すると、Web画面上でESP32が接続中になり、状態が周期的に更新される。</p>
+</div>
+<div class="card">
+<h2>ESP32から接続する場合</h2>
+<table><tr><th>項目</th><th>値</th></tr>
+<tr><td>接続先IP</td><td>中継サーバを起動しているPCのIPアドレス</td></tr>
+<tr><td>TCPポート</td><td>5000</td></tr>
+<tr><td>通信形式</td><td>JSON Lines</td></tr>
+<tr><td>区切り</td><td>改行コード <code>\n</code></td></tr>
+</table>
+<p>例: <code>192.168.1.10:5000</code></p>
+</div>
+<div class="card">
+<h2>PCのIPアドレス確認方法</h2>
+<h3>Windows</h3><pre><code>ipconfig</code></pre>
+<h3>macOS / Linux</h3><pre><code>ifconfig</code></pre><p>または</p><pre><code>ip addr</code></pre>
+</div>
+<div class="card">
+<h2>通信メッセージ例</h2>
+<h3>hello</h3><pre><code>{"type":"hello","device_id":"esp32-cam-001","fw_version":"0.1.0"}</code></pre>
+<h3>status</h3><pre><code>{"type":"status","state":"MONITORING","wifi_connected":true,"motion_detected":false,"light_level":1234,"capture_count":3,"last_capture_result":"OK","error_code":0}</code></pre>
+<h3>capture_request</h3><pre><code>{"type":"capture_request","request_id":"req-0001"}</code></pre>
+<h3>capture_result</h3><pre><code>{"type":"capture_result","request_id":"req-0001","result":"OK","capture_count":4,"error_code":0}</code></pre>
+</div>
+<div class="card">
+<h2>ポート変更方法</h2>
+<h3>Windows PowerShell</h3>
+<pre><code>$env:HTTP_PORT=3001
+$env:TCP_PORT=5001
+npm start</code></pre>
+<h3>macOS / Linux</h3>
+<pre><code>HTTP_PORT=3001 TCP_PORT=5001 npm start</code></pre>
+</div>
+<div class="card">
+<h2>よくあるトラブル</h2>
+<h3>Web画面が開けない</h3>
+<ul><li><code>npm start</code> が実行中か</li><li><code>http://localhost:3000</code> を開いているか</li><li>ポート3000を別アプリが使っていないか</li></ul>
+<h3>ESP32が接続中にならない</h3>
+<ul><li>ESP32がPCのIPアドレスへ接続しているか</li><li>TCPポート5000を指定しているか</li><li>PCのファイアウォールでブロックされていないか</li><li>ESP32とPCが同一ネットワークにいるか</li></ul>
+<h3>statusが表示されない</h3>
+<ul><li>ESP32がstatusメッセージを送っているか</li><li>JSONの末尾に改行コード <code>\n</code> が付いているか</li><li>JSONの形式が正しいか</li></ul>
+</div>
+<div class="card">
+<h2>動作確認チェックリスト</h2>
+<ul>
+<li><input type="checkbox"> <code>npm install</code> が成功する</li>
+<li><input type="checkbox"> <code>npm start</code> でサーバが起動する</li>
+<li><input type="checkbox"> <code>http://localhost:3000</code> が開ける</li>
+<li><input type="checkbox"> <code>npm run mock:esp32</code> でモック接続できる</li>
+<li><input type="checkbox"> Web画面でESP32接続中と表示される</li>
+<li><input type="checkbox"> statusが周期的に更新される</li>
+<li><input type="checkbox"> 撮影要求ボタンでcapture_requestが送信される</li>
+<li><input type="checkbox"> capture_resultがWeb画面に反映される</li>
+<li><input type="checkbox"> ESP32実機からTCP接続できる</li>
+<li><input type="checkbox"> ESP32実機からstatusを送信できる</li>
+</ul>
+</div>
+
+    <div class="footer">HTML export generated for offline distribution. Mermaid diagrams render via CDN when online.</div>
+  </main>
+</div>
+</body>
+</html>

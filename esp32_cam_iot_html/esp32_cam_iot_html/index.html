@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>受講者向け</title>
+<link rel="stylesheet" href="assets/styles.css">
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<script>document.addEventListener('DOMContentLoaded',()=>{ if(window.mermaid) mermaid.initialize({startOnLoad:true, theme:'default'}); });</script>
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar">
+    <h1>ESP32-CAM<br>簡易IoT監視システム<br>開発課題</h1>
+    <p class="small">Notionアカウント不要のHTML配布版</p>
+    <nav class="nav">
+<div class="section">入口</div>
+<a href="index.html">受講者向け案内</a>
+<div class="section">インプット</div>
+<a href="pages/01_input.html">01 上位文書</a>
+<a href="pages/08_socket_interface.html">08 ソケット通信仕様</a>
+<a href="pages/09_web_setup.html">09 Web側起動手順</a>
+<div class="section">テンプレート</div>
+<a href="pages/02_design_template.html">02 詳細設計書</a>
+<a href="pages/03_api_function_template.html">03 API・関数仕様</a>
+<a href="pages/04_test_template.html">04 テスト仕様・結果</a>
+<a href="pages/05_plan_review_template.html">05 作業計画・レビュー</a>
+<div class="section">補足</div>
+<a href="pages/06_web_api.html">06 Web画面・API支給仕様</a>
+<a href="pages/07_web_interface.html">07 Web側IF参考</a>
+<a href="downloads/esp32_socket_relay_web.zip">Web側Zip</a>
+</nav>
+  </aside>
+  <main class="content">
+    <section class="hero"><h1>受講者向け：ESP32-CAM 簡易IoT監視システム 開発課題</h1><p>Web側は提供済み。受講者はESP32側のTCPソケット通信・センサー・カメラ連携を設計実装します。</p></section>
+<div class="card">
+<h2>課題の目的</h2>
+<p>本課題の目的は、ESP32-CAMを使ってシステムを動かすことだけではありません。上位資料を読み、要求を理解し、詳細設計に落とし込み、実装し、テストで確認し、結果を報告する一連の開発プロセスを経験することを目的とします。</p>
+<ul>
+<li>上位資料から詳細設計へ落とし込む力</li>
+<li>組込みソフトウェアのモジュール分割を考える力</li>
+<li>C言語による実装力</li>
+<li>センサー、GPIO、カメラ、Wi-Fiなどのハードウェア寄りの理解</li>
+<li>TCPソケット通信の設計・実装力</li>
+<li>JSON Lines形式の送受信処理</li>
+<li>状態遷移、エラー処理、テスト設計を考える力</li>
+<li>不明点を整理し、レビューで説明する力</li>
+</ul>
+</div>
+<div class="card">
+<h2>本課題の全体像</h2>
+<p>Web画面およびWeb側中継サーバは渡邉側で提供します。受講者は、ESP32側でTCPソケット通信を実装し、Web側中継サーバと状態・撮影要求・撮影結果をやり取りします。</p>
+<div class="mermaid">
+flowchart LR
+    Browser[Web画面<br>提供済み] -->|HTTP / WebSocket| Relay[Web側中継サーバ<br>提供済み]
+    ESP32[ESP32-CAM<br>受講者実装] -->|TCP Socket / JSON Lines| Relay
+    ESP32 --> Camera[カメラ]
+    Sensor[センサー] --> ESP32
+    Button[ボタン] --> ESP32
+    ESP32 --> LED[LED]
+    ESP32 --> Buzzer[ブザー]
+</div>
+</div>
+<div class="card">
+<h2>最初に読む資料</h2>
+<table>
+<tr><th>No</th><th>資料</th><th>目的</th></tr>
+<tr><td>1</td><td><a href="pages/01_input.html">01_インプット資料：上位文書</a></td><td>システムの目的、要求、構成、状態遷移を理解する</td></tr>
+<tr><td>2</td><td><a href="pages/08_socket_interface.html">08_ソケット通信インターフェース仕様書</a></td><td>ESP32とWeb側中継サーバ間のTCPソケット通信仕様を理解する</td></tr>
+<tr><td>3</td><td><a href="pages/09_web_setup.html">09_Web側中継サーバ＋Web画面 起動手順書</a></td><td>提供されたWeb側環境の起動方法、確認方法を理解する</td></tr>
+</table>
+</div>
+<div class="card">
+<h2>Web側Zip</h2>
+<p>Web画面＋中継サーバ一式です。Node.jsで起動し、ESP32はTCP 5000番ポートへ接続します。</p>
+<a class="download" href="downloads/esp32_socket_relay_web.zip">esp32_socket_relay_web.zip をダウンロード</a>
+</div>
+<div class="card">
+<h2>作成に使うテンプレート</h2>
+<table>
+<tr><th>No</th><th>テンプレート</th><th>作成する内容</th></tr>
+<tr><td>1</td><td><a href="pages/02_design_template.html">02_詳細設計書テンプレート</a></td><td>モジュール構成、状態設計、インターフェース、データ設計</td></tr>
+<tr><td>2</td><td><a href="pages/03_api_function_template.html">03_API仕様書・関数仕様書テンプレート</a></td><td>内部API、関数仕様、メッセージ生成・解析処理</td></tr>
+<tr><td>3</td><td><a href="pages/04_test_template.html">04_テスト仕様書・結果報告書テンプレート</a></td><td>単体テスト、結合テスト、異常系テスト、結果報告</td></tr>
+<tr><td>4</td><td><a href="pages/05_plan_review_template.html">05_作業計画・レビュー管理テンプレート</a></td><td>作業計画、進捗、質問事項、レビュー指摘管理</td></tr>
+</table>
+</div>
+<div class="card">
+<h2>進め方</h2>
+<h3>Step 1: 課題の前提理解</h3>
+<p>01、08、09を読み、作るシステム、使用部品、状態遷移、Web側提供範囲、TCPソケット通信仕様を理解してください。</p>
+<h3>Step 2: Web側環境の起動確認</h3>
+<p>09の手順書に従い、Web側中継サーバ＋Web画面を起動してください。最初はESP32実機ではなく、モックESP32で動作確認して構いません。</p>
+<h3>Step 3: 作業計画の作成</h3>
+<p>05のテンプレートを使い、作業計画を作成してください。分からない部分は質問事項や未決事項として整理してください。</p>
+<h3>Step 4: 詳細設計の作成</h3>
+<p>02のテンプレートを使い、モジュール構成、状態遷移、TCPソケット通信、JSONメッセージ生成・解析、再接続方針を設計してください。</p>
+<h3>Step 5: API・関数仕様の作成</h3>
+<p>03のテンプレートを使い、ESP32側の内部API、関数仕様を作成してください。本課題ではHTTP APIではなく、ESP32側のソケット通信処理と内部関数仕様を重視します。</p>
+<h3>Step 6: テスト仕様の作成</h3>
+<p>04のテンプレートを使い、正常系だけでなく、TCP接続失敗、ソケット切断、不正JSON、撮影失敗などの異常系も考えてください。</p>
+</div>
+
+    <div class="footer">HTML export generated for offline distribution. Mermaid diagrams render via CDN when online.</div>
+  </main>
+</div>
+</body>
+</html>

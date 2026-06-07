@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>08_ソケット通信インターフェース仕様書</title>
+<link rel="stylesheet" href="../assets/styles.css">
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<script>document.addEventListener('DOMContentLoaded',()=>{ if(window.mermaid) mermaid.initialize({startOnLoad:true, theme:'default'}); });</script>
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar">
+    <h1>ESP32-CAM<br>簡易IoT監視システム<br>開発課題</h1>
+    <p class="small">Notionアカウント不要のHTML配布版</p>
+    <nav class="nav">
+<div class="section">入口</div>
+<a href="../index.html">受講者向け案内</a>
+<div class="section">インプット</div>
+<a href="01_input.html">01 上位文書</a>
+<a href="08_socket_interface.html">08 ソケット通信仕様</a>
+<a href="09_web_setup.html">09 Web側起動手順</a>
+<div class="section">テンプレート</div>
+<a href="02_design_template.html">02 詳細設計書</a>
+<a href="03_api_function_template.html">03 API・関数仕様</a>
+<a href="04_test_template.html">04 テスト仕様・結果</a>
+<a href="05_plan_review_template.html">05 作業計画・レビュー</a>
+<div class="section">補足</div>
+<a href="06_web_api.html">06 Web画面・API支給仕様</a>
+<a href="07_web_interface.html">07 Web側IF参考</a>
+<a href="../downloads/esp32_socket_relay_web.zip">Web側Zip</a>
+</nav>
+  </aside>
+  <main class="content">
+    <section class="hero"><h1>08_ソケット通信インターフェース仕様書</h1><p>Web側一式とESP32間のTCPソケット通信仕様</p></section>
+<div class="card"><h2>この資料の位置づけ</h2><p>本資料は、Web側一式とESP32間のソケット通信インターフェース仕様を定義する。本課題では、Web画面およびWeb側中継サーバは渡邉側で提供する。受講者は、ESP32側でTCPソケット通信を設計・実装し、センサー状態、カメラ撮影、エラー状態をWeb側へ連携する。</p></div>
+<div class="card"><h2>方針</h2><p>ブラウザ単体では、ESP32と直接TCPソケット通信を行うことはできない。そのため、本課題ではWeb側中継サーバを経由する。</p></div>
+<div class="card"><h2>全体構成</h2><div class="mermaid">
+flowchart LR
+    Browser[Web画面<br>提供済み] -->|HTTP / WebSocket| Relay[Web側中継サーバ<br>提供済み]
+    ESP32[ESP32-CAM<br>受講者実装] -->|TCP Socket / JSON Lines| Relay
+    ESP32 --> Camera[カメラ]
+    Sensor[センサー] --> ESP32
+    Button[ボタン] --> ESP32
+    ESP32 --> LED[LED]
+    ESP32 --> Buzzer[ブザー]
+</div></div>
+<div class="card">
+<h2>役割分担</h2>
+<table><tr><th>項目</th><th>担当</th><th>内容</th></tr>
+<tr><td>Web画面</td><td>渡邉側</td><td>状態表示、撮影ボタン、画面更新</td></tr>
+<tr><td>Web側中継サーバ</td><td>渡邉側</td><td>ブラウザ通信、ESP32とのTCPソケット通信を中継</td></tr>
+<tr><td>TCPソケット接続</td><td>受講者</td><td>ESP32からWeb側中継サーバへ接続する</td></tr>
+<tr><td>状態通知</td><td>受講者</td><td>ESP32から状態JSONを送信する</td></tr>
+<tr><td>撮影要求受信</td><td>受講者</td><td>Web側からの撮影要求を受信する</td></tr>
+<tr><td>撮影応答</td><td>受講者</td><td>撮影結果を返す</td></tr>
+<tr><td>エラー通知</td><td>受講者</td><td>ESP32側の異常状態を通知する</td></tr>
+</table>
+</div>
+<div class="card">
+<h2>通信方式</h2>
+<table><tr><th>項目</th><th>内容</th></tr>
+<tr><td>通信方式</td><td>TCPソケット</td></tr>
+<tr><td>接続方向</td><td>ESP32 → Web側中継サーバ</td></tr>
+<tr><td>通信形式</td><td>JSON Lines形式を基本とする</td></tr>
+<tr><td>文字コード</td><td>UTF-8</td></tr>
+<tr><td>区切り文字</td><td>改行コード <code>\n</code></td></tr>
+<tr><td>再接続</td><td>切断時はESP32側で再接続を試みる</td></tr>
+</table>
+</div>
+<div class="card">
+<h2>JSON Lines形式</h2>
+<p>1メッセージを1行のJSONとして送信する。送信時は末尾に改行コード <code>\n</code> を付与する。</p>
+<pre><code>{"type":"status","state":"MONITORING","wifi_connected":true,"motion_detected":false,"light_level":1234,"capture_count":3,"last_capture_result":"OK","error_code":0}</code></pre>
+</div>
+<div class="card">
+<h2>ポート仕様</h2>
+<table><tr><th>項目</th><th>値</th><th>備考</th></tr>
+<tr><td>Web側中継サーバIP</td><td>設定で指定</td><td>例: PCのIPアドレス</td></tr>
+<tr><td>TCPポート</td><td>5000</td><td>初期値。変更する場合は設定化</td></tr>
+<tr><td>Web画面ポート</td><td>3000</td><td>Web側提供物に依存</td></tr>
+</table>
+</div>
+<div class="card">
+<h2>メッセージ種別</h2>
+<table><tr><th>type</th><th>方向</th><th>内容</th></tr>
+<tr><td>hello</td><td>ESP32 → Web側</td><td>接続開始通知</td></tr>
+<tr><td>status</td><td>ESP32 → Web側</td><td>状態、センサー値通知</td></tr>
+<tr><td>capture_request</td><td>Web側 → ESP32</td><td>撮影要求</td></tr>
+<tr><td>capture_result</td><td>ESP32 → Web側</td><td>撮影結果通知</td></tr>
+<tr><td>error</td><td>ESP32 → Web側</td><td>エラー通知</td></tr>
+<tr><td>heartbeat</td><td>双方向</td><td>接続維持確認</td></tr>
+</table>
+</div>
+<div class="card">
+<h2>helloメッセージ</h2>
+<p>TCP接続確立直後に送信する。</p>
+<pre><code>{
+  "type": "hello",
+  "device_id": "esp32-cam-001",
+  "fw_version": "0.1.0"
+}</code></pre>
+<table><tr><th>項目</th><th>型</th><th>必須</th><th>内容</th></tr>
+<tr><td>type</td><td>string</td><td>必須</td><td>hello固定</td></tr>
+<tr><td>device_id</td><td>string</td><td>必須</td><td>デバイス識別子</td></tr>
+<tr><td>fw_version</td><td>string</td><td>任意</td><td>ファームウェアバージョン</td></tr>
+</table>
+</div>
+<div class="card">
+<h2>statusメッセージ</h2>
+<p>現在状態、センサー値、撮影状態、エラー情報を通知する。1秒周期を目安とする。</p>
+<pre><code>{
+  "type": "status",
+  "state": "MONITORING",
+  "wifi_connected": true,
+  "motion_detected": false,
+  "light_level": 1234,
+  "capture_count": 3,
+  "last_capture_result": "OK",
+  "error_code": 0
+}</code></pre>
+<table><tr><th>項目</th><th>型</th><th>必須</th><th>内容</th></tr>
+<tr><td>type</td><td>string</td><td>必須</td><td>status固定</td></tr>
+<tr><td>state</td><td>string</td><td>必須</td><td>現在状態</td></tr>
+<tr><td>wifi_connected</td><td>boolean</td><td>必須</td><td>Wi-Fi接続状態</td></tr>
+<tr><td>motion_detected</td><td>boolean</td><td>必須</td><td>センサー検知状態</td></tr>
+<tr><td>light_level</td><td>number</td><td>必須</td><td>明るさセンサー値</td></tr>
+<tr><td>capture_count</td><td>number</td><td>必須</td><td>撮影回数</td></tr>
+<tr><td>last_capture_result</td><td>string</td><td>必須</td><td>NONE、OK、NG、BUSY</td></tr>
+<tr><td>error_code</td><td>number</td><td>必須</td><td>正常時0</td></tr>
+</table>
+</div>
+<div class="card">
+<h2>capture_requestメッセージ</h2>
+<pre><code>{
+  "type": "capture_request",
+  "request_id": "req-0001"
+}</code></pre>
+</div>
+<div class="card">
+<h2>capture_resultメッセージ</h2>
+<h3>正常時</h3>
+<pre><code>{
+  "type": "capture_result",
+  "request_id": "req-0001",
+  "result": "OK",
+  "capture_count": 4,
+  "error_code": 0
+}</code></pre>
+<h3>異常時</h3>
+<pre><code>{
+  "type": "capture_result",
+  "request_id": "req-0001",
+  "result": "NG",
+  "capture_count": 3,
+  "error_code": 201,
+  "message": "Camera capture failed"
+}</code></pre>
+</div>
+<div class="card">
+<h2>errorメッセージ</h2>
+<pre><code>{
+  "type": "error",
+  "state": "ERROR",
+  "error_code": 200,
+  "message": "Camera initialization failed"
+}</code></pre>
+</div>
+<div class="card">
+<h2>状態一覧</h2>
+<table><tr><th>state</th><th>内容</th></tr>
+<tr><td>INIT</td><td>初期化中</td></tr><tr><td>WIFI_CONNECTING</td><td>Wi-Fi接続中</td></tr><tr><td>SENSOR_INIT</td><td>センサー初期化中</td></tr><tr><td>MONITORING</td><td>監視中</td></tr><tr><td>DETECTED</td><td>センサー検知中</td></tr><tr><td>CAPTURING</td><td>撮影中</td></tr><tr><td>NOTIFYING</td><td>通知中</td></tr><tr><td>ERROR</td><td>異常状態</td></tr>
+</table>
+</div>
+<div class="card">
+<h2>エラーコード</h2>
+<table><tr><th>error_code</th><th>内容</th></tr>
+<tr><td>0</td><td>正常</td></tr><tr><td>100</td><td>Wi-Fi初期化失敗</td></tr><tr><td>101</td><td>Wi-Fi接続失敗</td></tr><tr><td>200</td><td>カメラ初期化失敗</td></tr><tr><td>201</td><td>カメラ撮影失敗</td></tr><tr><td>202</td><td>カメラ撮影中</td></tr><tr><td>300</td><td>センサー初期化失敗</td></tr><tr><td>301</td><td>センサー値取得失敗</td></tr><tr><td>400</td><td>ソケット接続失敗</td></tr><tr><td>401</td><td>ソケット送信失敗</td></tr><tr><td>402</td><td>ソケット受信失敗</td></tr><tr><td>500</td><td>メモリ不足</td></tr><tr><td>900</td><td>ERROR状態中</td></tr>
+</table>
+</div>
+<div class="card">
+<h2>推奨モジュール構成</h2>
+<table><tr><th>モジュール</th><th>責務</th></tr>
+<tr><td>Socket Client Manager</td><td>TCP接続、送受信、再接続</td></tr>
+<tr><td>Message Manager</td><td>JSONメッセージ生成、解析</td></tr>
+<tr><td>State Manager</td><td>状態管理</td></tr>
+<tr><td>Sensor Manager</td><td>センサー値取得</td></tr>
+<tr><td>Camera Manager</td><td>カメラ初期化、撮影</td></tr>
+<tr><td>Application</td><td>全体制御、イベント処理</td></tr>
+</table>
+</div>
+<div class="card">
+<h2>シーケンス図</h2>
+<h3>接続開始</h3>
+<div class="mermaid">
+sequenceDiagram
+    participant ESP32 as ESP32
+    participant Server as Web側中継サーバ
+    ESP32->>Server: TCP connect
+    ESP32->>Server: hello
+    ESP32->>Server: status
+</div>
+<h3>手動撮影</h3>
+<div class="mermaid">
+sequenceDiagram
+    participant Browser as Web画面
+    participant Server as Web側中継サーバ
+    participant ESP32 as ESP32
+    participant Camera as Camera Manager
+    Browser->>Server: 撮影ボタン押下
+    Server->>ESP32: capture_request
+    ESP32->>Camera: 撮影要求
+    Camera-->>ESP32: 撮影結果
+    ESP32->>Server: capture_result
+    ESP32->>Server: status
+    Server->>Browser: 状態更新
+</div>
+</div>
+<div class="card">
+<h2>テスト観点</h2>
+<table><tr><th>テストID</th><th>内容</th><th>期待結果</th></tr>
+<tr><td>SOCK-001</td><td>Web側中継サーバへ接続する</td><td>TCP接続できる</td></tr>
+<tr><td>SOCK-002</td><td>接続直後にhelloを送信する</td><td>Web側でhelloを受信できる</td></tr>
+<tr><td>SOCK-003</td><td>statusを周期送信する</td><td>Web側で状態が更新される</td></tr>
+<tr><td>SOCK-004</td><td>capture_requestを受信する</td><td>ESP32側で撮影処理が呼ばれる</td></tr>
+<tr><td>SOCK-005</td><td>capture_resultを送信する</td><td>Web側で撮影結果が表示される</td></tr>
+<tr><td>SOCK-006</td><td>ソケット切断時に再接続する</td><td>再接続後にstatus送信が再開される</td></tr>
+<tr><td>SOCK-007</td><td>不正JSON受信</td><td>異常終了せず無視またはエラー扱いにする</td></tr>
+<tr><td>SOCK-008</td><td>カメラ撮影失敗</td><td>capture_resultでNGを返す</td></tr>
+</table>
+</div>
+
+    <div class="footer">HTML export generated for offline distribution. Mermaid diagrams render via CDN when online.</div>
+  </main>
+</div>
+</body>
+</html>

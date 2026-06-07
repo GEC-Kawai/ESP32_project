@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>03_API仕様書・関数仕様書テンプレート</title>
+<link rel="stylesheet" href="../assets/styles.css">
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<script>document.addEventListener('DOMContentLoaded',()=>{ if(window.mermaid) mermaid.initialize({startOnLoad:true, theme:'default'}); });</script>
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar">
+    <h1>ESP32-CAM<br>簡易IoT監視システム<br>開発課題</h1>
+    <p class="small">Notionアカウント不要のHTML配布版</p>
+    <nav class="nav">
+<div class="section">入口</div>
+<a href="../index.html">受講者向け案内</a>
+<div class="section">インプット</div>
+<a href="01_input.html">01 上位文書</a>
+<a href="08_socket_interface.html">08 ソケット通信仕様</a>
+<a href="09_web_setup.html">09 Web側起動手順</a>
+<div class="section">テンプレート</div>
+<a href="02_design_template.html">02 詳細設計書</a>
+<a href="03_api_function_template.html">03 API・関数仕様</a>
+<a href="04_test_template.html">04 テスト仕様・結果</a>
+<a href="05_plan_review_template.html">05 作業計画・レビュー</a>
+<div class="section">補足</div>
+<a href="06_web_api.html">06 Web画面・API支給仕様</a>
+<a href="07_web_interface.html">07 Web側IF参考</a>
+<a href="../downloads/esp32_socket_relay_web.zip">Web側Zip</a>
+</nav>
+  </aside>
+  <main class="content">
+    <section class="hero"><h1>03_API仕様書・関数仕様書テンプレート</h1><p>ESP32内部APIと関数仕様</p></section>
+<div class="card">
+<h2>改訂方針：API仕様の扱い</h2>
+<p>Web APIの外部仕様ではなく、ESP32側の内部API、ソケット通信関数、メッセージ生成・解析関数の仕様を具体化する。</p>
+</div>
+<div class="card">
+<h2>文書情報</h2>
+<table><tr><th>項目</th><th>内容</th></tr><tr><td>文書名</td><td>ESP32-CAM 簡易IoT監視システム API仕様書・関数仕様書</td></tr><tr><td>作成者</td><td></td></tr><tr><td>作成日</td><td></td></tr><tr><td>版数</td><td>0.1</td></tr></table>
+</div>
+<div class="card">
+<h2>内部API仕様</h2>
+<h3>Wi-Fi Manager</h3>
+<table><tr><th>関数名</th><th>概要</th><th>戻り値</th></tr><tr><td>wifi_manager_init</td><td>Wi-Fi機能を初期化する</td><td>成功/失敗</td></tr><tr><td>wifi_manager_connect</td><td>指定SSIDへ接続する</td><td>成功/失敗</td></tr><tr><td>wifi_manager_is_connected</td><td>接続状態を返す</td><td>true/false</td></tr></table>
+<h3>Socket Client Manager</h3>
+<table><tr><th>関数名</th><th>概要</th><th>戻り値</th></tr>
+<tr><td>socket_client_init</td><td>ソケット通信設定を初期化する</td><td>成功/失敗</td></tr>
+<tr><td>socket_client_connect</td><td>Web側中継サーバへ接続する</td><td>成功/失敗</td></tr>
+<tr><td>socket_client_send</td><td>メッセージを送信する</td><td>送信結果</td></tr>
+<tr><td>socket_client_receive</td><td>メッセージを受信する</td><td>受信結果</td></tr>
+<tr><td>socket_client_close</td><td>ソケットを切断する</td><td>なし</td></tr>
+<tr><td>socket_client_is_connected</td><td>接続状態を返す</td><td>true/false</td></tr>
+<tr><td>socket_client_reconnect</td><td>再接続を試みる</td><td>成功/失敗</td></tr>
+</table>
+<h3>Message Manager</h3>
+<table><tr><th>関数名</th><th>概要</th><th>戻り値</th></tr>
+<tr><td>message_create_hello</td><td>helloメッセージを生成する</td><td>生成結果</td></tr>
+<tr><td>message_create_status</td><td>statusメッセージを生成する</td><td>生成結果</td></tr>
+<tr><td>message_create_capture_result</td><td>capture_resultメッセージを生成する</td><td>生成結果</td></tr>
+<tr><td>message_create_error</td><td>errorメッセージを生成する</td><td>生成結果</td></tr>
+<tr><td>message_parse_received</td><td>受信メッセージを解析する</td><td>解析結果</td></tr>
+</table>
+<h3>Camera Manager</h3>
+<table><tr><th>関数名</th><th>概要</th><th>戻り値</th></tr><tr><td>camera_manager_init</td><td>カメラを初期化する</td><td>成功/失敗</td></tr><tr><td>camera_manager_capture</td><td>静止画を取得する</td><td>成功/失敗</td></tr></table>
+</div>
+<div class="card">
+<h2>関数仕様記入フォーマット</h2>
+<table><tr><th>項目</th><th>内容</th></tr>
+<tr><td>関数名</td><td></td></tr><tr><td>所属モジュール</td><td></td></tr><tr><td>目的</td><td></td></tr><tr><td>引数</td><td></td></tr><tr><td>戻り値</td><td></td></tr><tr><td>前提条件</td><td></td></tr><tr><td>正常時動作</td><td></td></tr><tr><td>異常時動作</td><td></td></tr><tr><td>呼び出し元</td><td></td></tr><tr><td>呼び出し先</td><td></td></tr><tr><td>使用するグローバル変数</td><td></td></tr><tr><td>注意事項</td><td></td></tr></table>
+</div>
+<div class="card">
+<h2>エラーコード定義</h2>
+<table><tr><th>エラーコード</th><th>名称</th><th>内容</th></tr>
+<tr><td>0</td><td>APP_OK</td><td>正常</td></tr><tr><td>100</td><td>ERR_WIFI_INIT</td><td>Wi-Fi初期化失敗</td></tr><tr><td>101</td><td>ERR_WIFI_CONNECT</td><td>Wi-Fi接続失敗</td></tr><tr><td>200</td><td>ERR_CAMERA_INIT</td><td>カメラ初期化失敗</td></tr><tr><td>201</td><td>ERR_CAMERA_CAPTURE</td><td>カメラ撮影失敗</td></tr><tr><td>300</td><td>ERR_SENSOR_INIT</td><td>センサー初期化失敗</td></tr><tr><td>400</td><td>ERR_SOCKET_CONNECT</td><td>ソケット接続失敗</td></tr><tr><td>401</td><td>ERR_SOCKET_SEND</td><td>ソケット送信失敗</td></tr><tr><td>402</td><td>ERR_SOCKET_RECV</td><td>ソケット受信失敗</td></tr><tr><td>500</td><td>ERR_MEMORY</td><td>メモリ不足</td></tr></table>
+</div>
+
+    <div class="footer">HTML export generated for offline distribution. Mermaid diagrams render via CDN when online.</div>
+  </main>
+</div>
+</body>
+</html>

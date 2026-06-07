@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>04_テスト仕様書・結果報告書テンプレート</title>
+<link rel="stylesheet" href="../assets/styles.css">
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<script>document.addEventListener('DOMContentLoaded',()=>{ if(window.mermaid) mermaid.initialize({startOnLoad:true, theme:'default'}); });</script>
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar">
+    <h1>ESP32-CAM<br>簡易IoT監視システム<br>開発課題</h1>
+    <p class="small">Notionアカウント不要のHTML配布版</p>
+    <nav class="nav">
+<div class="section">入口</div>
+<a href="../index.html">受講者向け案内</a>
+<div class="section">インプット</div>
+<a href="01_input.html">01 上位文書</a>
+<a href="08_socket_interface.html">08 ソケット通信仕様</a>
+<a href="09_web_setup.html">09 Web側起動手順</a>
+<div class="section">テンプレート</div>
+<a href="02_design_template.html">02 詳細設計書</a>
+<a href="03_api_function_template.html">03 API・関数仕様</a>
+<a href="04_test_template.html">04 テスト仕様・結果</a>
+<a href="05_plan_review_template.html">05 作業計画・レビュー</a>
+<div class="section">補足</div>
+<a href="06_web_api.html">06 Web画面・API支給仕様</a>
+<a href="07_web_interface.html">07 Web側IF参考</a>
+<a href="../downloads/esp32_socket_relay_web.zip">Web側Zip</a>
+</nav>
+  </aside>
+  <main class="content">
+    <section class="hero"><h1>04_テスト仕様書・結果報告書テンプレート</h1><p>テスト設計とテスト結果記録</p></section>
+<div class="card"><h2>改訂方針：テスト対象</h2><p>Web画面の見た目ではなく、ESP32側のTCPソケット通信、JSON送受信、状態連携、撮影要求処理を確認する。</p></div>
+<div class="card"><h2>テスト環境</h2><table><tr><th>項目</th><th>内容</th></tr><tr><td>使用ボード</td><td></td></tr><tr><td>使用センサー</td><td></td></tr><tr><td>開発PC</td><td></td></tr><tr><td>開発環境</td><td></td></tr><tr><td>Web側中継サーバ</td><td></td></tr><tr><td>GitHubリポジトリ</td><td></td></tr></table></div>
+<div class="card"><h2>単体テスト仕様</h2>
+<table><tr><th>テストID</th><th>対象</th><th>確認内容</th><th>期待結果</th><th>結果</th><th>備考</th></tr>
+<tr><td>UT-WIFI-001</td><td>Wi-Fi Manager</td><td>Wi-Fi初期化</td><td>正常終了する</td><td>未実施</td><td></td></tr>
+<tr><td>UT-SOCK-001</td><td>Socket Client</td><td>接続処理</td><td>中継サーバへ接続できる</td><td>未実施</td><td></td></tr>
+<tr><td>UT-SOCK-002</td><td>Socket Client</td><td>送信処理</td><td>改行付きで送信できる</td><td>未実施</td><td></td></tr>
+<tr><td>UT-SOCK-003</td><td>Socket Client</td><td>受信処理</td><td>改行区切りでメッセージを取り出せる</td><td>未実施</td><td></td></tr>
+<tr><td>UT-MSG-001</td><td>Message Manager</td><td>hello生成</td><td>仕様通りのJSON</td><td>未実施</td><td></td></tr>
+<tr><td>UT-MSG-002</td><td>Message Manager</td><td>status生成</td><td>仕様通りのJSON</td><td>未実施</td><td></td></tr>
+<tr><td>UT-MSG-003</td><td>Message Manager</td><td>capture_request解析</td><td>request_idを取得できる</td><td>未実施</td><td></td></tr>
+<tr><td>UT-CAM-001</td><td>Camera Manager</td><td>撮影処理</td><td>撮影成功/失敗を返す</td><td>未実施</td><td></td></tr>
+<tr><td>UT-ST-001</td><td>State Manager</td><td>状態遷移</td><td>仕様通りに遷移する</td><td>未実施</td><td></td></tr>
+</table></div>
+<div class="card"><h2>結合テスト仕様</h2>
+<table><tr><th>テストID</th><th>テスト内容</th><th>手順</th><th>期待結果</th><th>結果</th></tr>
+<tr><td>IT-001</td><td>電源投入からWeb側接続まで</td><td>ESP32を起動する</td><td>Web画面に接続中と表示される</td><td>未実施</td></tr>
+<tr><td>IT-002</td><td>hello送信</td><td>TCP接続直後に送信</td><td>Web画面にdevice_idが表示される</td><td>未実施</td></tr>
+<tr><td>IT-003</td><td>status周期送信</td><td>1秒周期で送信</td><td>Web画面の値が更新される</td><td>未実施</td></tr>
+<tr><td>IT-004</td><td>撮影要求</td><td>Web画面の撮影要求ボタンを押す</td><td>capture_resultが返る</td><td>未実施</td></tr>
+<tr><td>IT-005</td><td>エラー通知</td><td>エラーを発生させる</td><td>Web画面にエラーが表示される</td><td>未実施</td></tr>
+</table></div>
+<div class="card"><h2>異常系テスト仕様</h2>
+<table><tr><th>テストID</th><th>異常内容</th><th>手順</th><th>期待結果</th><th>結果</th></tr>
+<tr><td>ET-001</td><td>Wi-Fi接続失敗</td><td>誤ったSSID/パスワード</td><td>ERRORへ遷移</td><td>未実施</td></tr>
+<tr><td>ET-002</td><td>TCP接続失敗</td><td>サーバ未起動</td><td>再接続を試みる</td><td>未実施</td></tr>
+<tr><td>ET-003</td><td>ソケット切断</td><td>サーバを停止する</td><td>切断検知し再接続</td><td>未実施</td></tr>
+<tr><td>ET-004</td><td>不正JSON受信</td><td>不正な文字列を受信</td><td>異常終了しない</td><td>未実施</td></tr>
+<tr><td>ET-005</td><td>撮影中再要求</td><td>撮影中にcapture_request</td><td>BUSYまたは適切なエラー</td><td>未実施</td></tr>
+</table></div>
+<div class="card"><h2>テスト結果サマリ</h2><table><tr><th>区分</th><th>件数</th><th>OK</th><th>NG</th><th>未実施</th></tr><tr><td>単体テスト</td><td></td><td></td><td></td><td></td></tr><tr><td>結合テスト</td><td></td><td></td><td></td><td></td></tr><tr><td>異常系テスト</td><td></td><td></td><td></td><td></td></tr></table></div>
+<div class="card"><h2>不具合管理</h2><table><tr><th>No</th><th>発生日</th><th>内容</th><th>再現手順</th><th>原因</th><th>対応内容</th><th>状態</th></tr><tr><td>1</td><td></td><td></td><td></td><td></td><td></td><td>未対応</td></tr></table></div>
+
+    <div class="footer">HTML export generated for offline distribution. Mermaid diagrams render via CDN when online.</div>
+  </main>
+</div>
+</body>
+</html>

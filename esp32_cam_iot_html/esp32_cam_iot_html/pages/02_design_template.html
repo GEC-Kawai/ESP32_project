@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>02_詳細設計書テンプレート</title>
+<link rel="stylesheet" href="../assets/styles.css">
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<script>document.addEventListener('DOMContentLoaded',()=>{ if(window.mermaid) mermaid.initialize({startOnLoad:true, theme:'default'}); });</script>
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar">
+    <h1>ESP32-CAM<br>簡易IoT監視システム<br>開発課題</h1>
+    <p class="small">Notionアカウント不要のHTML配布版</p>
+    <nav class="nav">
+<div class="section">入口</div>
+<a href="../index.html">受講者向け案内</a>
+<div class="section">インプット</div>
+<a href="01_input.html">01 上位文書</a>
+<a href="08_socket_interface.html">08 ソケット通信仕様</a>
+<a href="09_web_setup.html">09 Web側起動手順</a>
+<div class="section">テンプレート</div>
+<a href="02_design_template.html">02 詳細設計書</a>
+<a href="03_api_function_template.html">03 API・関数仕様</a>
+<a href="04_test_template.html">04 テスト仕様・結果</a>
+<a href="05_plan_review_template.html">05 作業計画・レビュー</a>
+<div class="section">補足</div>
+<a href="06_web_api.html">06 Web画面・API支給仕様</a>
+<a href="07_web_interface.html">07 Web側IF参考</a>
+<a href="../downloads/esp32_socket_relay_web.zip">Web側Zip</a>
+</nav>
+  </aside>
+  <main class="content">
+    <section class="hero"><h1>02_詳細設計書テンプレート</h1><p>詳細設計書に記載する項目</p></section>
+<div class="card">
+<h2>改訂方針：Web画面・Web APIの扱い</h2>
+<p>本詳細設計書では、Web画面そのものの設計ではなく、支給されたWeb側中継サーバに対するESP32側のソケット通信実装設計を行う。</p>
+<ul><li>Socket Client Managerの責務</li><li>Message Managerの責務</li><li>status送信処理</li><li>capture_request受信処理</li><li>capture_result送信処理</li><li>ERROR状態時のerror送信処理</li><li>再接続処理</li><li>受信バッファ処理</li></ul>
+</div>
+<div class="card">
+<h2>文書情報</h2>
+<table><tr><th>項目</th><th>内容</th></tr>
+<tr><td>文書名</td><td>ESP32-CAM 簡易IoT監視システム 詳細設計書</td></tr><tr><td>作成者</td><td></td></tr><tr><td>作成日</td><td></td></tr><tr><td>更新日</td><td></td></tr><tr><td>版数</td><td>0.1</td></tr><tr><td>レビュー担当</td><td></td></tr></table>
+</div>
+<div class="card">
+<h2>システム概要</h2>
+<h3>システムの目的</h3><p>ここに、システム全体の目的を自分の言葉で記載する。</p>
+<h3>システムの主な機能</h3>
+<table><tr><th>ID</th><th>機能</th><th>本設計での対応方針</th></tr>
+<tr><td>FR-001</td><td>Wi-Fi接続</td><td></td></tr><tr><td>FR-002</td><td>TCPソケット接続</td><td></td></tr><tr><td>FR-003</td><td>hello送信</td><td></td></tr><tr><td>FR-004</td><td>status送信</td><td></td></tr><tr><td>FR-005</td><td>capture_request受信</td><td></td></tr><tr><td>FR-006</td><td>カメラ撮影</td><td></td></tr><tr><td>FR-007</td><td>capture_result送信</td><td></td></tr><tr><td>FR-008</td><td>エラー通知</td><td></td></tr></table>
+</div>
+<div class="card">
+<h2>ソフトウェア構成</h2>
+<div class="mermaid">
+flowchart TB
+    App[Application]
+    App --> State[State Manager]
+    App --> Wifi[Wi-Fi Manager]
+    App --> Socket[Socket Client Manager]
+    App --> Message[Message Manager]
+    App --> Camera[Camera Manager]
+    App --> Sensor[Sensor Manager]
+    App --> Gpio[GPIO Manager]
+    Socket --> Message
+    Message --> State
+    Sensor --> App
+    Camera --> App
+</div>
+<table><tr><th>モジュール名</th><th>役割</th><th>主なファイル</th><th>備考</th></tr>
+<tr><td>Application</td><td>全体制御</td><td>app_main.c</td><td></td></tr>
+<tr><td>State Manager</td><td>状態管理</td><td>app_state.c / app_state.h</td><td></td></tr>
+<tr><td>Wi-Fi Manager</td><td>Wi-Fi接続管理</td><td>wifi_manager.c / wifi_manager.h</td><td></td></tr>
+<tr><td>Socket Client Manager</td><td>TCP接続、送受信、再接続</td><td>socket_client.c / socket_client.h</td><td></td></tr>
+<tr><td>Message Manager</td><td>JSON生成、解析</td><td>message_manager.c / message_manager.h</td><td></td></tr>
+<tr><td>Camera Manager</td><td>カメラ制御</td><td>camera_manager.c / camera_manager.h</td><td></td></tr>
+<tr><td>Sensor Manager</td><td>センサー値の取得、判定</td><td>sensor_manager.c / sensor_manager.h</td><td></td></tr>
+<tr><td>GPIO Manager</td><td>LED、ボタン、ブザー制御</td><td>gpio_manager.c / gpio_manager.h</td><td></td></tr>
+</table>
+</div>
+<div class="card">
+<h2>状態設計</h2>
+<table><tr><th>状態名</th><th>内容</th><th>主な処理</th></tr>
+<tr><td>INIT</td><td>初期化中</td><td></td></tr><tr><td>WIFI_CONNECTING</td><td>Wi-Fi接続中</td><td></td></tr><tr><td>SENSOR_INIT</td><td>センサー初期化中</td><td></td></tr><tr><td>SOCKET_CONNECTING</td><td>Web側中継サーバ接続中</td><td></td></tr><tr><td>MONITORING</td><td>監視中</td><td></td></tr><tr><td>DETECTED</td><td>センサー検知</td><td></td></tr><tr><td>CAPTURING</td><td>撮影中</td><td></td></tr><tr><td>NOTIFYING</td><td>通知中</td><td></td></tr><tr><td>ERROR</td><td>異常状態</td><td></td></tr></table>
+<h3>状態遷移表</h3>
+<table><tr><th>現在状態</th><th>イベント</th><th>次状態</th><th>処理内容</th></tr>
+<tr><td>INIT</td><td>初期化成功</td><td>WIFI_CONNECTING</td><td></td></tr>
+<tr><td>WIFI_CONNECTING</td><td>Wi-Fi接続成功</td><td>SENSOR_INIT</td><td></td></tr>
+<tr><td>SENSOR_INIT</td><td>初期化成功</td><td>SOCKET_CONNECTING</td><td></td></tr>
+<tr><td>SOCKET_CONNECTING</td><td>接続成功</td><td>MONITORING</td><td>hello送信</td></tr>
+<tr><td>MONITORING</td><td>capture_request受信</td><td>CAPTURING</td><td></td></tr>
+<tr><td>CAPTURING</td><td>撮影成功</td><td>NOTIFYING</td><td>capture_result送信</td></tr>
+<tr><td>NOTIFYING</td><td>通知完了</td><td>MONITORING</td><td></td></tr>
+<tr><td>任意</td><td>異常発生</td><td>ERROR</td><td>error送信</td></tr>
+</table>
+</div>
+<div class="card">
+<h2>インターフェース設計</h2>
+<h3>GPIO割り当て</h3>
+<table><tr><th>用途</th><th>GPIO番号</th><th>入出力</th><th>内容</th><th>備考</th></tr>
+<tr><td>LED</td><td></td><td>出力</td><td>状態表示</td><td></td></tr><tr><td>ブザー</td><td></td><td>出力</td><td>通知音</td><td></td></tr><tr><td>ボタン</td><td></td><td>入力</td><td>手動操作</td><td>チャタリング対策要</td></tr><tr><td>人感/距離センサー</td><td></td><td>入力</td><td>検知</td><td></td></tr><tr><td>明るさセンサー</td><td></td><td>入力</td><td>ADC値取得</td><td></td></tr></table>
+<h3>ソケット通信</h3>
+<table><tr><th>項目</th><th>内容</th></tr><tr><td>接続先IP</td><td></td></tr><tr><td>TCPポート</td><td>5000</td></tr><tr><td>通信形式</td><td>JSON Lines</td></tr><tr><td>送信周期</td><td>statusは1秒周期を目安</td></tr><tr><td>再接続間隔</td><td></td></tr></table>
+</div>
+<div class="card">
+<h2>データ設計</h2>
+<pre><code>typedef struct
+{
+    AppState state;
+    bool wifi_connected;
+    bool motion_detected;
+    int light_level;
+    int capture_count;
+    int error_code;
+    bool socket_connected;
+    bool camera_busy;
+    uint32_t last_capture_time_ms;
+} AppStatus;</code></pre>
+</div>
+<div class="card">
+<h2>エラー処理設計</h2>
+<table><tr><th>エラー</th><th>検出方法</th><th>処理</th><th>通知</th></tr>
+<tr><td>Wi-Fi接続失敗</td><td></td><td>ERRORへ遷移</td><td>error送信</td></tr>
+<tr><td>ソケット接続失敗</td><td></td><td>再接続、またはERROR</td><td>error送信</td></tr>
+<tr><td>カメラ初期化失敗</td><td></td><td>ERRORへ遷移</td><td>error送信</td></tr>
+<tr><td>カメラ撮影失敗</td><td></td><td>capture_result NG</td><td>capture_result送信</td></tr>
+<tr><td>不正JSON受信</td><td></td><td>無視またはerror</td><td>必要に応じてerror送信</td></tr>
+</table>
+</div>
+
+    <div class="footer">HTML export generated for offline distribution. Mermaid diagrams render via CDN when online.</div>
+  </main>
+</div>
+</body>
+</html>

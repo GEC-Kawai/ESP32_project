@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>05_作業計画・レビュー管理テンプレート</title>
+<link rel="stylesheet" href="../assets/styles.css">
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<script>document.addEventListener('DOMContentLoaded',()=>{ if(window.mermaid) mermaid.initialize({startOnLoad:true, theme:'default'}); });</script>
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar">
+    <h1>ESP32-CAM<br>簡易IoT監視システム<br>開発課題</h1>
+    <p class="small">Notionアカウント不要のHTML配布版</p>
+    <nav class="nav">
+<div class="section">入口</div>
+<a href="../index.html">受講者向け案内</a>
+<div class="section">インプット</div>
+<a href="01_input.html">01 上位文書</a>
+<a href="08_socket_interface.html">08 ソケット通信仕様</a>
+<a href="09_web_setup.html">09 Web側起動手順</a>
+<div class="section">テンプレート</div>
+<a href="02_design_template.html">02 詳細設計書</a>
+<a href="03_api_function_template.html">03 API・関数仕様</a>
+<a href="04_test_template.html">04 テスト仕様・結果</a>
+<a href="05_plan_review_template.html">05 作業計画・レビュー</a>
+<div class="section">補足</div>
+<a href="06_web_api.html">06 Web画面・API支給仕様</a>
+<a href="07_web_interface.html">07 Web側IF参考</a>
+<a href="../downloads/esp32_socket_relay_web.zip">Web側Zip</a>
+</nav>
+  </aside>
+  <main class="content">
+    <section class="hero"><h1>05_作業計画・レビュー管理テンプレート</h1><p>WBS、進捗、質問、レビュー指摘を管理</p></section>
+<div class="card"><h2>目的</h2><p>本資料は、ESP32-CAM 簡易IoT監視システム開発課題の作業計画、実績、レビュー状況を管理するためのテンプレートである。</p></div>
+<div class="card"><h2>全体スケジュール</h2><table><tr><th>フェーズ</th><th>期間目安</th><th>内容</th><th>主な成果物</th><th>状態</th></tr><tr><td>Phase 1</td><td>1ヶ月目</td><td>要件理解、設計、テスト仕様作成</td><td>詳細設計書、API仕様書、テスト仕様書</td><td>未着手</td></tr><tr><td>Phase 2</td><td>2ヶ月目</td><td>実装、単体動作確認</td><td>ソースコード、README途中版</td><td>未着手</td></tr><tr><td>Phase 3</td><td>3ヶ月目</td><td>結合テスト、異常系テスト、改善、報告</td><td>テスト結果報告書、最終README</td><td>未着手</td></tr></table></div>
+<div class="card"><h2>WBS</h2><table><tr><th>No</th><th>タスク</th><th>内容</th><th>予定開始</th><th>予定終了</th><th>実績開始</th><th>実績終了</th><th>状態</th></tr>
+<tr><td>1</td><td>キット内容確認</td><td>使用する部品を確認する</td><td></td><td></td><td></td><td></td><td>未着手</td></tr>
+<tr><td>2</td><td>Web側環境起動</td><td>Node.js、npm、モックESP32確認</td><td></td><td></td><td></td><td></td><td>未着手</td></tr>
+<tr><td>3</td><td>開発環境構築</td><td>ビルド、書き込み、シリアル確認</td><td></td><td></td><td></td><td></td><td>未着手</td></tr>
+<tr><td>4</td><td>要求理解</td><td>上位文書、ソケット仕様を読む</td><td></td><td></td><td></td><td></td><td>未着手</td></tr>
+<tr><td>5</td><td>詳細設計作成</td><td>モジュール構成、状態設計、IF設計</td><td></td><td></td><td></td><td></td><td>未着手</td></tr>
+<tr><td>6</td><td>関数仕様作成</td><td>主要関数の仕様を作成する</td><td></td><td></td><td></td><td></td><td>未着手</td></tr>
+<tr><td>7</td><td>テスト仕様作成</td><td>単体、結合、異常系テストを定義する</td><td></td><td></td><td></td><td></td><td>未着手</td></tr>
+<tr><td>8</td><td>設計レビュー</td><td>設計内容を説明し指摘を受ける</td><td></td><td></td><td></td><td></td><td>未着手</td></tr>
+<tr><td>9</td><td>Wi-Fi実装</td><td>Wi-Fi接続処理を実装する</td><td></td><td></td><td></td><td></td><td>未着手</td></tr>
+<tr><td>10</td><td>ソケット通信実装</td><td>接続、送受信、再接続を実装する</td><td></td><td></td><td></td><td></td><td>未着手</td></tr>
+<tr><td>11</td><td>メッセージ処理実装</td><td>JSON生成、解析を実装する</td><td></td><td></td><td></td><td></td><td>未着手</td></tr>
+<tr><td>12</td><td>カメラ実装</td><td>カメラ初期化、撮影処理を実装する</td><td></td><td></td><td></td><td></td><td>未着手</td></tr>
+<tr><td>13</td><td>センサー実装</td><td>検知、明るさ判定を実装する</td><td></td><td></td><td></td><td></td><td>未着手</td></tr>
+<tr><td>14</td><td>GPIO実装</td><td>LED、ボタン、ブザーを実装する</td><td></td><td></td><td></td><td></td><td>未着手</td></tr>
+<tr><td>15</td><td>単体テスト</td><td>各モジュール単位で確認する</td><td></td><td></td><td></td><td></td><td>未着手</td></tr>
+<tr><td>16</td><td>結合テスト</td><td>Web側中継サーバと接続して確認する</td><td></td><td></td><td></td><td></td><td>未着手</td></tr>
+<tr><td>17</td><td>異常系テスト</td><td>切断、不正JSON、撮影失敗などを確認する</td><td></td><td></td><td></td><td></td><td>未着手</td></tr>
+<tr><td>18</td><td>最終報告</td><td>成果、課題、改善案を説明する</td><td></td><td></td><td></td><td></td><td>未着手</td></tr>
+</table></div>
+<div class="card"><h2>週次進捗記録</h2><table><tr><th>項目</th><th>内容</th></tr><tr><td>実施内容</td><td></td></tr><tr><td>完了したこと</td><td></td></tr><tr><td>未完了のこと</td><td></td></tr><tr><td>困っていること</td><td></td></tr><tr><td>次回までにやること</td><td></td></tr><tr><td>レビューしてほしいこと</td><td></td></tr></table></div>
+<div class="card"><h2>レビュー記録</h2><table><tr><th>No</th><th>日付</th><th>レビュー対象</th><th>指摘内容</th><th>対応方針</th><th>状態</th></tr><tr><td>1</td><td></td><td></td><td></td><td></td><td>未対応</td></tr></table></div>
+<div class="card"><h2>質問事項</h2><table><tr><th>No</th><th>日付</th><th>質問内容</th><th>背景</th><th>回答</th><th>状態</th></tr><tr><td>1</td><td></td><td></td><td></td><td></td><td>未回答</td></tr></table></div>
+
+    <div class="footer">HTML export generated for offline distribution. Mermaid diagrams render via CDN when online.</div>
+  </main>
+</div>
+</body>
+</html>

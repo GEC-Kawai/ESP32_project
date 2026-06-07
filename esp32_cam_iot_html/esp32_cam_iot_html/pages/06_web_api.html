@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>06_Web画面・Web API仕様</title>
+<link rel="stylesheet" href="../assets/styles.css">
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<script>document.addEventListener('DOMContentLoaded',()=>{ if(window.mermaid) mermaid.initialize({startOnLoad:true, theme:'default'}); });</script>
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar">
+    <h1>ESP32-CAM<br>簡易IoT監視システム<br>開発課題</h1>
+    <p class="small">Notionアカウント不要のHTML配布版</p>
+    <nav class="nav">
+<div class="section">入口</div>
+<a href="../index.html">受講者向け案内</a>
+<div class="section">インプット</div>
+<a href="01_input.html">01 上位文書</a>
+<a href="08_socket_interface.html">08 ソケット通信仕様</a>
+<a href="09_web_setup.html">09 Web側起動手順</a>
+<div class="section">テンプレート</div>
+<a href="02_design_template.html">02 詳細設計書</a>
+<a href="03_api_function_template.html">03 API・関数仕様</a>
+<a href="04_test_template.html">04 テスト仕様・結果</a>
+<a href="05_plan_review_template.html">05 作業計画・レビュー</a>
+<div class="section">補足</div>
+<a href="06_web_api.html">06 Web画面・API支給仕様</a>
+<a href="07_web_interface.html">07 Web側IF参考</a>
+<a href="../downloads/esp32_socket_relay_web.zip">Web側Zip</a>
+</nav>
+  </aside>
+  <main class="content">
+    <section class="hero"><h1>06_支給資料：Web画面・Web API仕様</h1><p>補足資料：Web画面側の表示項目・支給範囲</p></section>
+<div class="card"><h2>この資料の位置づけ</h2><p>本資料は、渡邉側で支給するWeb画面およびWeb API仕様である。ただし、現在の主方針ではWeb側中継サーバを提供し、受講者はESP32側のTCPソケット通信を実装する。したがって本資料はWeb画面側の表示項目や支給範囲を確認する補足資料として扱う。</p></div>
+<div class="card"><h2>役割分担</h2><table><tr><th>項目</th><th>担当</th><th>内容</th></tr><tr><td>Web画面の基本構成</td><td>渡邉側</td><td>簡易HTML、表示項目、画面遷移を支給する</td></tr><tr><td>Web側中継サーバ</td><td>渡邉側</td><td>ブラウザとESP32間を中継する</td></tr><tr><td>ESP32側ソケット実装</td><td>受講者</td><td>JSON Lines形式で送受信する</td></tr><tr><td>センサー値反映</td><td>受講者</td><td>statusメッセージへ反映する</td></tr><tr><td>カメラ撮影処理</td><td>受講者</td><td>capture_requestに応じて撮影する</td></tr></table></div>
+<div class="card"><h2>Web画面に表示する項目</h2><table><tr><th>表示項目</th><th>内容</th><th>取得元</th></tr><tr><td>システム状態</td><td>INIT、MONITORING、ERRORなど</td><td>status</td></tr><tr><td>Wi-Fi接続状態</td><td>接続済み、未接続</td><td>status</td></tr><tr><td>センサー検知状態</td><td>検知あり、検知なし</td><td>status</td></tr><tr><td>明るさセンサー値</td><td>ADC値または判定結果</td><td>status</td></tr><tr><td>撮影回数</td><td>自動、手動を含む撮影回数</td><td>status / capture_result</td></tr><tr><td>最終撮影結果</td><td>OK、NG、未実施</td><td>status / capture_result</td></tr><tr><td>エラーコード</td><td>現在エラーコード</td><td>status / error</td></tr></table></div>
+<div class="card"><h2>画面イメージ</h2><pre><code>ESP32-CAM 簡易IoT監視システム
+
+状態: MONITORING
+Wi-Fi: 接続済み
+センサー: 検知なし
+明るさ: 1234
+撮影回数: 3
+最終撮影結果: OK
+エラーコード: 0
+
+[状態更新]
+[撮影する]</code></pre></div>
+
+    <div class="footer">HTML export generated for offline distribution. Mermaid diagrams render via CDN when online.</div>
+  </main>
+</div>
+</body>
+</html>

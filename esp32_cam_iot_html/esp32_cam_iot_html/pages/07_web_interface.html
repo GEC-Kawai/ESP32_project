@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>07_Web側インターフェース仕様書</title>
+<link rel="stylesheet" href="../assets/styles.css">
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<script>document.addEventListener('DOMContentLoaded',()=>{ if(window.mermaid) mermaid.initialize({startOnLoad:true, theme:'default'}); });</script>
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar">
+    <h1>ESP32-CAM<br>簡易IoT監視システム<br>開発課題</h1>
+    <p class="small">Notionアカウント不要のHTML配布版</p>
+    <nav class="nav">
+<div class="section">入口</div>
+<a href="../index.html">受講者向け案内</a>
+<div class="section">インプット</div>
+<a href="01_input.html">01 上位文書</a>
+<a href="08_socket_interface.html">08 ソケット通信仕様</a>
+<a href="09_web_setup.html">09 Web側起動手順</a>
+<div class="section">テンプレート</div>
+<a href="02_design_template.html">02 詳細設計書</a>
+<a href="03_api_function_template.html">03 API・関数仕様</a>
+<a href="04_test_template.html">04 テスト仕様・結果</a>
+<a href="05_plan_review_template.html">05 作業計画・レビュー</a>
+<div class="section">補足</div>
+<a href="06_web_api.html">06 Web画面・API支給仕様</a>
+<a href="07_web_interface.html">07 Web側IF参考</a>
+<a href="../downloads/esp32_socket_relay_web.zip">Web側Zip</a>
+</nav>
+  </aside>
+  <main class="content">
+    <section class="hero"><h1>07_Web側インターフェース仕様書</h1><p>参考資料：HTTP API版の仕様</p></section>
+<div class="notice">現在の主方針は、ESP32がWeb側中継サーバへTCPソケット接続する方式です。このページはHTTP API版の参考仕様として残しています。</div>
+<div class="card"><h2>対象範囲</h2><table><tr><th>区分</th><th>対象</th><th>担当</th></tr><tr><td>Web画面</td><td>HTML/CSS/JavaScript</td><td>支給済み</td></tr><tr><td>HTTPサーバ</td><td>ESP32上で動作するWebサーバ</td><td>参考仕様</td></tr><tr><td>Web API</td><td>/status、/capture、/reset</td><td>参考仕様</td></tr></table></div>
+<div class="card"><h2>参考URL一覧</h2><table><tr><th>URL</th><th>Method</th><th>概要</th></tr><tr><td>/</td><td>GET</td><td>Web画面HTMLを返す</td></tr><tr><td>/status</td><td>GET</td><td>現在状態をJSONで返す</td></tr><tr><td>/capture</td><td>GET</td><td>カメラ撮影しJPEGを返す</td></tr><tr><td>/reset</td><td>POST</td><td>エラー状態を解除する</td></tr></table></div>
+<div class="card"><h2>/status レスポンス例</h2><pre><code>{
+  "state": "MONITORING",
+  "wifi_connected": true,
+  "motion_detected": false,
+  "light_level": 1234,
+  "capture_count": 3,
+  "last_capture_result": "OK",
+  "error_code": 0
+}</code></pre></div>
+
+    <div class="footer">HTML export generated for offline distribution. Mermaid diagrams render via CDN when online.</div>
+  </main>
+</div>
+</body>
+</html>
